@@ -40081,6 +40081,7 @@ MonoBehaviour:
   thirstRate: 0.5
   reproductiveUrgeRate: 0.5
   baseSpeed: 2
+  TOUCHING_DISTANCE: 0.6
 --- !u!114 &4048483649699225377
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -40099,6 +40100,7 @@ MonoBehaviour:
     chainStates: 
     position: {x: 0, y: 0, z: 0}
     target: {fileID: 0}
+  verbose: 1
 --- !u!1001 &6733771387685882453
 PrefabInstance:
   m_ObjectHideFlags: 0

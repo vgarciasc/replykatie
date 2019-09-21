@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 
+public enum Gender { UNDEFINED, FEMALE, MALE };
+
 public class Creature : MonoBehaviour
 {
     // Necessities
@@ -12,10 +14,10 @@ public class Creature : MonoBehaviour
     [Range(-1f, 1f)]
     float hunger = 0;
     [SerializeField]
-    [Range(0f, 1f)]
+    [Range(-1f, 1f)]
     float thirst = 0;
     [SerializeField]
-    [Range(0f, 1f)]
+    [Range(-1f, 1f)]
     float reproductiveUrge = 0;
 
     [SerializeField]
@@ -28,9 +30,15 @@ public class Creature : MonoBehaviour
     [Header("Attributes")]
     [SerializeField]
     float baseSpeed = 2f;
+    [SerializeField]
+    Gender gender = Gender.UNDEFINED;
 
     Rigidbody2D rb;
     CPU cpu;
+
+    [Header("Constants")]
+    [SerializeField]
+    float TOUCHING_DISTANCE = 0.7f;
 
     void Start()
     {
@@ -42,44 +50,45 @@ public class Creature : MonoBehaviour
     {
         UpdateHunger();
         //UpdateThirst();
-        //UpdateReproductiveUrge();
+        // UpdateReproductiveUrge();
 
         HandleHunger();
         //HandleThirst();
-        //HandleReproductiveUrge();
+        // HandleReproductiveUrge();
 
         HandleIdle();
     }
 
+    #region Necessities
     void UpdateHunger() {
         this.hunger = Mathf.Min(1f, this.hunger + Time.deltaTime * this.hungerRate);
     }
 
     void HandleHunger() {
-        var hungerProcess = new IntentProcess(
-            this.hunger * 2f,
-            IntentProcessKind.SEARCH_FOOD,
-            new List<IntentProcessKind>() { IntentProcessKind.GO_FOOD }
-        );
-
+        var hungerProcess = IntentProcess.Proc_SearchFood(this.hunger * 2f);
         cpu.Interrupt(hungerProcess);
     }
 
-    void HandleIdle() {
-        var idleProcess = new IntentProcess(
-            1,
-            IntentProcessKind.IDLE,
-            null
-        );
+    // void UpdateReproductiveUrge() {
+    //     this.reproductiveUrge = Mathf.Min(1f, this.reproductiveUrge + Time.deltaTime * this.reproductiveUrgeRate);
+    // }
 
+    // void HandleReproductiveUrge() {
+    //     var matingProcess = IntentProcess.Proc_SearchMate(this.reproductiveUrge * 2f);
+    //     cpu.Interrupt(matingProcess);
+    // }
+
+    void HandleIdle() {
+        var idleProcess = IntentProcess.Proc_Idle();
         cpu.Interrupt(idleProcess);
     }
+    #endregion
 
+    #region Process
     public IEnumerator GetProcessCoroutine(IntentProcess process) {
         switch (process.kind) {
             case IntentProcessKind.SEARCH_FOOD:
                 while (true) { yield return RandomWalk(); }
-                break;
             case IntentProcessKind.GO_FOOD:
                 yield return WalkTo(process.position);
                 break;
@@ -87,7 +96,6 @@ public class Creature : MonoBehaviour
                 var food = process.target;
                 if (IsObjectAvailable(food)) {
                     yield return Eat(food);
-                    Destroy(food);
                 }
                 break;
             case IntentProcessKind.IDLE:
@@ -95,7 +103,6 @@ public class Creature : MonoBehaviour
                     yield return RandomWalk();
                     yield return new WaitForSeconds(1f);
                 }
-                break;
             default:
                 Debug.LogError("This should not be happening. Process Kind: "
                     + System.Enum.GetName(typeof(IntentProcessKind), process.kind));
@@ -109,6 +116,7 @@ public class Creature : MonoBehaviour
     public void CleanContext() {
         this.rb.velocity = Vector3.zero;
     }
+    #endregion
     
     #region Actions
     IEnumerator RandomWalk()
@@ -135,11 +143,16 @@ public class Creature : MonoBehaviour
 
     IEnumerator Eat(GameObject food)
     {
-        this.hunger = this.hunger - 1f;
-
         yield return new WaitForSeconds(1f);
+        Destroy(food);
 
-        this.transform.DOScale(1.1f, 0.3f).SetEase(Ease.InBounce);
+        float animDuration = 0.3f;
+        this.transform.DOScale(1.1f, animDuration).SetEase(Ease.InBounce);
+        yield return new WaitForSeconds(animDuration);
+        
+        this.hunger = this.hunger - 1f;
+        
+        yield return new WaitForSeconds(1f);
     }
     #endregion
 
@@ -148,29 +161,11 @@ public class Creature : MonoBehaviour
         var obj = collision.gameObject;
         float distance = Vector3.Distance(this.transform.position, obj.transform.position);
 
-        if (obj.tag == "Flower") {
-            // close quarters
-            if (distance < 0.6f) {
-                var goFoodProcess = new IntentProcess(
-                    5,
-                    IntentProcessKind.EAT_FOOD,
-                    null,
-                    obj.transform.position,
-                    obj
-                );
-                cpu.Interrupt(goFoodProcess);   
-            }
-            // so far away
-            else {
-                var goFoodProcess = new IntentProcess(
-                    this.hunger * 3f,
-                    IntentProcessKind.GO_FOOD,
-                    new List<IntentProcessKind>() { IntentProcessKind.EAT_FOOD },
-                    obj.transform.position,
-                    obj
-                );
-                cpu.Interrupt(goFoodProcess);
-            }
+        if (obj.tag == "Food") {
+            var goFoodProcess = distance < TOUCHING_DISTANCE ? 
+                IntentProcess.Proc_EatFood(5f, obj)
+                : IntentProcess.Proc_GoFood(this.hunger * 3f, obj);
+            cpu.Interrupt(goFoodProcess);
         }
     }
     #endregion
