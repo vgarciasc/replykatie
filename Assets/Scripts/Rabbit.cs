@@ -59,7 +59,6 @@ public class Rabbit : MonoBehaviour
     void Start()
     {
         rb = this.GetComponentInChildren<Rigidbody2D>();
-
         currentManageIntent = StartCoroutine(ManageIntent(Intent.IdleIntent()));
     }
 
