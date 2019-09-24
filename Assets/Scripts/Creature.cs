@@ -53,11 +53,11 @@ public class Creature : MonoBehaviour
     {
         UpdateHunger();
         //UpdateThirst();
-        // UpdateReproductiveUrge();
+        UpdateReproductiveUrge();
 
         HandleHunger();
         //HandleThirst();
-        // HandleReproductiveUrge();
+        HandleReproductiveUrge();
 
         HandleIdle();
 
@@ -74,14 +74,14 @@ public class Creature : MonoBehaviour
         cpu.Interrupt(hungerProcess);
     }
 
-    // void UpdateReproductiveUrge() {
-    //     this.reproductiveUrge = Mathf.Min(1f, this.reproductiveUrge + Time.deltaTime * this.reproductiveUrgeRate);
-    // }
+    void UpdateReproductiveUrge() {
+        this.reproductiveUrge = Mathf.Min(1f, this.reproductiveUrge + Time.deltaTime * this.reproductiveUrgeRate);
+    }
 
-    // void HandleReproductiveUrge() {
-    //     var matingProcess = IntentProcess.Proc_SearchMate(this.reproductiveUrge * 2f);
-    //     cpu.Interrupt(matingProcess);
-    // }
+    void HandleReproductiveUrge() {
+        var matingProcess = IntentProcess.Proc_SearchMate(this.reproductiveUrge * 2f);
+        cpu.Interrupt(matingProcess);
+    }
 
     void HandleIdle() {
         var idleProcess = IntentProcess.Proc_Idle();
@@ -92,9 +92,11 @@ public class Creature : MonoBehaviour
     #region Process
     public IEnumerator GetProcessCoroutine(IntentProcess process) {
         switch (process.kind) {
-            case IntentProcessKind.SEARCH_FOOD:
+            case IntentProcessKind.SEARCH_FOOD: 
+            case IntentProcessKind.SEARCH_MATE:
                 while (true) { yield return RandomWalk(); }
             case IntentProcessKind.GO_FOOD:
+            case IntentProcessKind.GO_MATE:
                 yield return WalkTo(process.position);
                 break;
             case IntentProcessKind.EAT_FOOD:
@@ -102,6 +104,9 @@ public class Creature : MonoBehaviour
                 if (IsObjectAvailable(food)) {
                     yield return Eat(food);
                 }
+                break;
+            case IntentProcessKind.COPULATE:
+                var mate = process.target;
                 break;
             case IntentProcessKind.IDLE:
                 while (true) {
@@ -167,11 +172,18 @@ public class Creature : MonoBehaviour
         float distance = Vector3.Distance(this.transform.position, obj.transform.position);
 
         if (obj.tag == "Food") {
-            var goFoodProcess = distance < TOUCHING_DISTANCE ? 
+            var foodProcess = distance < TOUCHING_DISTANCE ? 
                 IntentProcess.Proc_EatFood(5f, obj)
                 : IntentProcess.Proc_GoFood(this.hunger * 3f, obj);
-            cpu.Interrupt(goFoodProcess);
+            cpu.Interrupt(foodProcess);
         }
+        //else if (obj.tag == "Creature")
+        //{
+        //    var mateProcess = distance < TOUCHING_DISTANCE ?
+        //        IntentProcess.Proc_Copulate(5f, obj)
+        //        : IntentProcess.Proc_GoMate(this.reproductiveUrge * 3f, obj);
+        //    cpu.Interrupt(mateProcess);
+        //}
     }
     #endregion
 
