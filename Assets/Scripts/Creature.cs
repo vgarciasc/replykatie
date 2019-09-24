@@ -7,7 +7,17 @@ public enum Gender { UNDEFINED, FEMALE, MALE };
 
 public class Creature : MonoBehaviour
 {
-    // Necessities
+    [Header("Constants")]
+
+    [SerializeField]
+    float hungerRate = 0.5f;
+    [SerializeField]
+    float thirstRate = 0.5f;
+    [SerializeField]
+    float reproductiveUrgeRate = 0.5f;
+    [SerializeField]
+    float TOUCHING_DISTANCE = 0.7f;
+
     [Header("Necessities")]
 
     [SerializeField]
@@ -19,26 +29,19 @@ public class Creature : MonoBehaviour
     [SerializeField]
     [Range(-1f, 1f)]
     float reproductiveUrge = 0;
+    [SerializeField]
+    float health = 0;
 
-    [SerializeField]
-    float hungerRate = 0.5f;
-    [SerializeField]
-    float thirstRate = 0.5f;
-    [SerializeField]
-    float reproductiveUrgeRate = 0.5f;
-    
     [Header("Attributes")]
+
     [SerializeField]
     float baseSpeed = 2f;
     [SerializeField]
     Gender gender = Gender.UNDEFINED;
 
+    // Components
     Rigidbody2D rb;
     CPU cpu;
-
-    [Header("Constants")]
-    [SerializeField]
-    float TOUCHING_DISTANCE = 0.7f;
 
     void Start()
     {
@@ -57,6 +60,8 @@ public class Creature : MonoBehaviour
         // HandleReproductiveUrge();
 
         HandleIdle();
+
+        HandleHealth();
     }
 
     #region Necessities
@@ -167,6 +172,22 @@ public class Creature : MonoBehaviour
                 : IntentProcess.Proc_GoFood(this.hunger * 3f, obj);
             cpu.Interrupt(goFoodProcess);
         }
+    }
+    #endregion
+
+    #region Health
+    void HandleHealth()
+    {
+        this.health = 1 - (this.hunger * 0.5f + this.thirst * 0.5f);
+        if (health <= 0.5f)
+        {
+            Die();
+        }
+    }
+
+    void Die()
+    {
+        Destroy(this.gameObject);
     }
     #endregion
 
