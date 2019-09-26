@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 5238323016022636659}
   - component: {fileID: 5238323016022636658}
   m_Layer: 8
-  m_Name: Bunny 1
+  m_Name: Bunny
   m_TagString: Creature
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -130,7 +130,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.5, y: 0.5}
+  m_Size: {x: 0.3, y: 0.3}
   m_EdgeRadius: 0
 --- !u!58 &8114740418525837727
 CircleCollider2D:
@@ -186,6 +186,7 @@ MonoBehaviour:
   hunger: 0
   thirst: 0
   reproductiveUrge: 0
+  reproductiveUrge_x: 0
   health: 0
   baseSpeed: 2
   gender: 1

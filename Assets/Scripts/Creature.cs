@@ -27,8 +27,10 @@ public class Creature : MonoBehaviour
     [Range(-1f, 1f)]
     float thirst = 0;
     [SerializeField]
-    [Range(-1f, 1f)]
+    [Range(0f, 1f)]
     float reproductiveUrge = 0;
+    [SerializeField]
+    float reproductiveUrge_x = Mathf.PI;
     [SerializeField]
     float health = 0;
 
@@ -57,7 +59,7 @@ public class Creature : MonoBehaviour
 
         HandleHunger();
         //HandleThirst();
-        HandleReproductiveUrge();
+        //HandleReproductiveUrge();
 
         HandleIdle();
 
@@ -75,12 +77,15 @@ public class Creature : MonoBehaviour
     }
 
     void UpdateReproductiveUrge() {
-        this.reproductiveUrge = Mathf.Min(1f, this.reproductiveUrge + Time.deltaTime * this.reproductiveUrgeRate);
-    }
-
-    void HandleReproductiveUrge() {
-        var matingProcess = IntentProcess.Proc_SearchMate(this.reproductiveUrge * 2f);
-        cpu.Interrupt(matingProcess);
+        if (this.gender == Gender.FEMALE)
+        {
+            this.reproductiveUrge_x = (this.reproductiveUrge_x + Time.deltaTime * this.reproductiveUrgeRate) % (2f * Mathf.PI);
+            this.reproductiveUrge = 0.5f * (1f + Mathf.Cos(this.reproductiveUrge_x));
+        }
+        else
+        {
+            this.reproductiveUrge = Mathf.Clamp01(this.reproductiveUrge + Time.deltaTime * this.reproductiveUrgeRate);
+        }
     }
 
     void HandleIdle() {
@@ -107,6 +112,7 @@ public class Creature : MonoBehaviour
                 break;
             case IntentProcessKind.COPULATE:
                 var mate = process.target;
+                yield return Copulate(mate);
                 break;
             case IntentProcessKind.IDLE:
                 while (true) {
@@ -164,6 +170,18 @@ public class Creature : MonoBehaviour
         
         yield return new WaitForSeconds(1f);
     }
+
+    IEnumerator Copulate(GameObject mate)
+    {
+        if (this.gender == Gender.MALE)
+        {
+            var mateProcess = IntentProcess.Proc_Copulate(15f, this.gameObject);
+            mate.GetComponent<CPU>().Interrupt(mateProcess);
+        }
+        yield return new WaitForSeconds(1f);
+        this.reproductiveUrge_x = this.gender == Gender.FEMALE ? Mathf.PI : 0f;
+        this.reproductiveUrge = 0f;
+    }
     #endregion
 
     #region Sensing
@@ -177,13 +195,20 @@ public class Creature : MonoBehaviour
                 : IntentProcess.Proc_GoFood(this.hunger * 3f, obj);
             cpu.Interrupt(foodProcess);
         }
-        //else if (obj.tag == "Creature")
-        //{
-        //    var mateProcess = distance < TOUCHING_DISTANCE ?
-        //        IntentProcess.Proc_Copulate(5f, obj)
-        //        : IntentProcess.Proc_GoMate(this.reproductiveUrge * 3f, obj);
-        //    cpu.Interrupt(mateProcess);
-        //}
+        else if (obj.tag == "Creature")
+        {
+            var targetCreature = obj.GetComponentInChildren<Creature>();
+            if (this.gender == Gender.MALE && targetCreature.gender == Gender.FEMALE)
+            {
+                if (this.reproductiveUrge * targetCreature.reproductiveUrge > 0.7f)
+                {
+                    var mateProcess = distance < TOUCHING_DISTANCE ?
+                        IntentProcess.Proc_Copulate(5f, obj)
+                        : IntentProcess.Proc_GoMate(this.reproductiveUrge * targetCreature.reproductiveUrge * 2f, obj);
+                    cpu.Interrupt(mateProcess);
+                }
+            }
+        }
     }
     #endregion
 

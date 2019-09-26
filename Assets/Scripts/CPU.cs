@@ -156,9 +156,9 @@ public class CPU : MonoBehaviour
         if (verbose && currentProcess != null && process != null) {
             print(">> Change of process. ["
                 + System.Enum.GetName(typeof(IntentProcessKind), currentProcess.kind)
-                + "] => ["
+                + "] (" + currentProcess.priority + ") => ["
                 + System.Enum.GetName(typeof(IntentProcessKind), process.kind)
-                + "]");
+                + "] (" + process.priority + ")");
         }
 
         CancelCurrentProcess();
