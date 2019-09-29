@@ -17,8 +17,12 @@ public class Creature : MonoBehaviour
     float reproductiveUrgeRate = 0.5f;
     [SerializeField]
     float TOUCHING_DISTANCE = 0.7f;
+    [SerializeField]
+    float GESTATION_DURATION = 10f;
+    [SerializeField]
+    float GESTATION_SLOWDOWN = 2f;
 
-    [Header("Necessities")]
+    [Header("State")]
 
     [SerializeField]
     [Range(-1f, 1f)]
@@ -29,10 +33,12 @@ public class Creature : MonoBehaviour
     [SerializeField]
     [Range(0f, 1f)]
     float reproductiveUrge = 0;
-    [SerializeField]
+    // [SerializeField]
     float reproductiveUrge_x = Mathf.PI;
     [SerializeField]
     float health = 0;
+    [SerializeField]
+    bool gestating = false;
 
     [Header("Attributes")]
 
@@ -41,14 +47,21 @@ public class Creature : MonoBehaviour
     [SerializeField]
     Gender gender = Gender.UNDEFINED;
 
+    [Header("Prefabs")]
+
+    [SerializeField]
+    string creaturePrefabName;
+
     // Components
-    Rigidbody2D rb;
     CPU cpu;
+    Rigidbody2D rb;
+    SpriteRenderer sr;
 
     void Start()
     {
         this.cpu = this.GetComponent<CPU>();
         this.rb = this.GetComponent<Rigidbody2D>();
+        this.sr = this.GetComponent<SpriteRenderer>();
     }
 
     void Update()
@@ -62,7 +75,6 @@ public class Creature : MonoBehaviour
         //HandleReproductiveUrge();
 
         HandleIdle();
-
         HandleHealth();
     }
 
@@ -79,11 +91,15 @@ public class Creature : MonoBehaviour
     void UpdateReproductiveUrge() {
         if (this.gender == Gender.FEMALE)
         {
-            this.reproductiveUrge_x = (this.reproductiveUrge_x + Time.deltaTime * this.reproductiveUrgeRate) % (2f * Mathf.PI);
-            this.reproductiveUrge = 0.5f * (1f + Mathf.Cos(this.reproductiveUrge_x));
+            if (!this.gestating) {
+                // Reproductive urge of female creatures behaves like a cosinusoidal function
+                this.reproductiveUrge_x = (this.reproductiveUrge_x + Time.deltaTime * this.reproductiveUrgeRate) % (2f * Mathf.PI);
+                this.reproductiveUrge = 0.5f * (1f + Mathf.Cos(this.reproductiveUrge_x));
+            }
         }
-        else
+        else if (this.gender == Gender.MALE)
         {
+            // Reproductive urge of male creatures behaves like a linear positive function
             this.reproductiveUrge = Mathf.Clamp01(this.reproductiveUrge + Time.deltaTime * this.reproductiveUrgeRate);
         }
     }
@@ -111,7 +127,7 @@ public class Creature : MonoBehaviour
                 }
                 break;
             case IntentProcessKind.COPULATE:
-                var mate = process.target;
+                var mate = process.target.GetComponent<Creature>();
                 yield return Copulate(mate);
                 break;
             case IntentProcessKind.IDLE:
@@ -171,16 +187,51 @@ public class Creature : MonoBehaviour
         yield return new WaitForSeconds(1f);
     }
 
-    IEnumerator Copulate(GameObject mate)
+    IEnumerator Copulate(Creature mate)
     {
         if (this.gender == Gender.MALE)
         {
             var mateProcess = IntentProcess.Proc_Copulate(15f, this.gameObject);
             mate.GetComponent<CPU>().Interrupt(mateProcess);
         }
+        else {
+            StartCoroutine(Gestate(this, mate));
+        }
         yield return new WaitForSeconds(1f);
         this.reproductiveUrge_x = this.gender == Gender.FEMALE ? Mathf.PI : 0f;
         this.reproductiveUrge = 0f;
+    }
+    #endregion
+
+    #region Reproduction
+    IEnumerator Gestate(Creature mother, Creature father) {
+        this.gestating = true;
+        this.baseSpeed /= GESTATION_SLOWDOWN;
+        
+        yield return new WaitForSeconds(GESTATION_DURATION);
+        GiveBirth(mother, father);
+
+        this.gestating = false;
+        this.baseSpeed *= GESTATION_SLOWDOWN;
+    }
+
+    void GiveBirth(Creature mother, Creature father) {
+        var obj = Instantiate(
+            (GameObject) Resources.Load("Prefabs/" + this.creaturePrefabName),
+            this.transform.position,
+            Quaternion.identity);
+        obj.transform.SetParent(this.transform.parent);
+
+        var offspring = obj.GetComponentInChildren<Creature>();
+        offspring.GetBorth(mother, father);
+    }
+
+    public void GetBorth(Creature mother, Creature father) {
+        this.Start();
+        this.gender = Random.Range(0, 11) <= 5 ? Gender.FEMALE : Gender.MALE;
+        this.sr.color = this.gender == Gender.FEMALE ?
+            (new Color(0.8f, 0.1f, 0.2f)) + Color.white * Random.Range(-0.2f, 0.2f) :
+            (new Color(0.2f, 0.3f, 0.8f)) + Color.white * Random.Range(-0.2f, 0.2f);
     }
     #endregion
 

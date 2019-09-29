@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 5088942299574096403}
   - component: {fileID: 6733771387685882456}
   - component: {fileID: 6917078855084956980}
+  - component: {fileID: 1109825240193728361}
   m_Layer: 0
   m_Name: Flower
   m_TagString: Food
@@ -27,7 +28,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2983413750282108912}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.311, y: -0.295, z: 4.6732326}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -134,3 +135,23 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.5, y: 0.54}
   m_EdgeRadius: 0
+--- !u!114 &1109825240193728361
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2983413750282108912}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4d92e733ee78cf45b8062eccb44e2b8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  size: 1
+  lifetime: 0
+  timeOfDeath: 0
+  timeBetweenSpreads: {x: 7, y: 15}
+  spreadRadius: 3
+  lifeExpectancyRange: {x: 20, y: 25}
+  growingRate: 0.25
+  plantPrefabName: Flower
