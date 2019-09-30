@@ -56,12 +56,16 @@ public class Creature : MonoBehaviour
     CPU cpu;
     Rigidbody2D rb;
     SpriteRenderer sr;
+    LifeForm lifeForm;
 
     void Start()
     {
         this.cpu = this.GetComponent<CPU>();
         this.rb = this.GetComponent<Rigidbody2D>();
         this.sr = this.GetComponent<SpriteRenderer>();
+        this.lifeForm = this.GetComponent<LifeForm>();
+        
+        this.lifeForm.deathEvent += Die;
     }
 
     void Update()
@@ -175,6 +179,8 @@ public class Creature : MonoBehaviour
 
     IEnumerator Eat(GameObject food)
     {
+        float nutritionalValue = food.GetComponent<Plant>().GetNutritionalValue();
+
         yield return new WaitForSeconds(1f);
         Destroy(food);
 
@@ -182,7 +188,7 @@ public class Creature : MonoBehaviour
         this.transform.DOScale(1.1f, animDuration).SetEase(Ease.InBounce);
         yield return new WaitForSeconds(animDuration);
         
-        this.hunger = this.hunger - 1f;
+        this.hunger = this.hunger - 1f * nutritionalValue;
         
         yield return new WaitForSeconds(1f);
     }
@@ -241,6 +247,7 @@ public class Creature : MonoBehaviour
         float distance = Vector3.Distance(this.transform.position, obj.transform.position);
 
         if (obj.tag == "Food") {
+            print(obj + ", " + distance);
             var foodProcess = distance < TOUCHING_DISTANCE ? 
                 IntentProcess.Proc_EatFood(5f, obj)
                 : IntentProcess.Proc_GoFood(this.hunger * 3f, obj);
@@ -273,8 +280,10 @@ public class Creature : MonoBehaviour
         }
     }
 
-    void Die()
-    {
+    void Die() {StartCoroutine(Die_Coroutine());}
+    IEnumerator Die_Coroutine() {
+        this.sr.DOFade(0f, 1f);
+        yield return new WaitForSeconds(1f);
         Destroy(this.gameObject);
     }
     #endregion

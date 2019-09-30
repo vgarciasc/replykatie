@@ -5,7 +5,6 @@ using System.Collections;
 using System;
 
 static class HushPuppy {
-
     public static GameObject safeFind(string name) {
         GameObject go = GameObject.FindGameObjectWithTag(name);
         if (go == null) {

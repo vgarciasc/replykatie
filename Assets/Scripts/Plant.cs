@@ -10,10 +10,6 @@ public class Plant : MonoBehaviour
     [SerializeField]
     [Range(0f, 1f)]
     float size = 1f;
-    [SerializeField]
-    float lifetime = 0f;
-    [SerializeField]
-    float timeOfDeath = 0f;
 
     [Header("Attributes")]
 
@@ -21,8 +17,6 @@ public class Plant : MonoBehaviour
     Vector2 timeBetweenSpreads = new Vector2(7f, 15f);
     [SerializeField]
     float spreadRadius = 3f;
-    [SerializeField]
-    Vector2 lifeExpectancyRange = new Vector2(20f, 25f);
     [SerializeField]
     float growingRate = 0.25f;
 
@@ -34,13 +28,16 @@ public class Plant : MonoBehaviour
     // Components
     SpriteRenderer sr;
     MapManager mapManager;
+    LifeForm lifeForm;
     
     void Start()
     {
-        this.sr = this.GetComponentInChildren<SpriteRenderer>();
+        this.sr = this.GetComponent<SpriteRenderer>();
+        this.lifeForm = this.GetComponent<LifeForm>();
+
         this.mapManager = MapManager.GetMapManager();
 
-        this.timeOfDeath = HushPuppy.RandomFloat(this.lifeExpectancyRange);
+        this.lifeForm.deathEvent += Die;
 
         StartCoroutine(Spread());
     }
@@ -48,7 +45,6 @@ public class Plant : MonoBehaviour
     void Update()
     {
         HandleSize();
-        HandleLife();
     }
 
     #region Reproduction
@@ -87,16 +83,14 @@ public class Plant : MonoBehaviour
         this.transform.localScale = Vector3.one * size;
     }
 
-    void HandleLife() {
-        this.lifetime += Time.deltaTime;
-        if (this.lifetime > this.timeOfDeath) {
-            StartCoroutine(Die());
-        }      
-    }
-
-    IEnumerator Die() {
+    void Die() {StartCoroutine(Die_Coroutine());}
+    IEnumerator Die_Coroutine() {
         this.sr.DOFade(0f, 1f);
         yield return new WaitForSeconds(1f);
         Destroy(this.gameObject);
+    }
+
+    public float GetNutritionalValue() {
+        return size;
     }
 }

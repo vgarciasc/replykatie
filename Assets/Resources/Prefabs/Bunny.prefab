@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 5238323016022636618}
   - component: {fileID: 4615386352501654148}
   - component: {fileID: 8114740418525837727}
+  - component: {fileID: 742502694464029274}
   - component: {fileID: 5238323016022636659}
   - component: {fileID: 5238323016022636658}
   m_Layer: 8
@@ -148,6 +149,21 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 2
+--- !u!114 &742502694464029274
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5238323016022636621}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 876e508b927774c49b9bf948a49a1d53, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lifetime: 0
+  timeOfDeath: 0
+  lifeExpectancyRange: {x: 50, y: 70}
 --- !u!114 &5238323016022636659
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -181,8 +197,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hungerRate: 0.05
   thirstRate: 0.5
-  reproductiveUrgeRate: 0.05
-  TOUCHING_DISTANCE: 0.6
+  reproductiveUrgeRate: 0.2
+  TOUCHING_DISTANCE: 0.7
   GESTATION_DURATION: 3
   GESTATION_SLOWDOWN: 2
   hunger: 0
