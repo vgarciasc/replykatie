@@ -38,6 +38,11 @@ public class Creature : MonoBehaviour
     [SerializeField]
     float health = 0;
     [SerializeField]
+    [Range(0f, 1f)]
+    float size = 0;
+    [SerializeField]
+    float growthRate = 0.25f;
+    [SerializeField]
     bool gestating = false;
 
     [Header("Attributes")]
@@ -57,6 +62,7 @@ public class Creature : MonoBehaviour
     Rigidbody2D rb;
     SpriteRenderer sr;
     LifeForm lifeForm;
+    MapManager mapManager;
 
     void Start()
     {
@@ -64,6 +70,8 @@ public class Creature : MonoBehaviour
         this.rb = this.GetComponent<Rigidbody2D>();
         this.sr = this.GetComponent<SpriteRenderer>();
         this.lifeForm = this.GetComponent<LifeForm>();
+        
+        this.mapManager = MapManager.GetMapManager();
         
         this.lifeForm.deathEvent += Die;
     }
@@ -93,13 +101,17 @@ public class Creature : MonoBehaviour
     }
 
     void UpdateReproductiveUrge() {
+        if (this.gestating || this.lifeForm.lifetime < 10f) {
+            this.reproductiveUrge_x = this.gender == Gender.FEMALE ? Mathf.PI : 0f;
+            this.reproductiveUrge = 0f;
+            return;
+        }
+        
         if (this.gender == Gender.FEMALE)
         {
-            if (!this.gestating) {
-                // Reproductive urge of female creatures behaves like a cosinusoidal function
-                this.reproductiveUrge_x = (this.reproductiveUrge_x + Time.deltaTime * this.reproductiveUrgeRate) % (2f * Mathf.PI);
-                this.reproductiveUrge = 0.5f * (1f + Mathf.Cos(this.reproductiveUrge_x));
-            }
+            // Reproductive urge of female creatures behaves like a cosinusoidal function
+            this.reproductiveUrge_x = (this.reproductiveUrge_x + Time.deltaTime * this.reproductiveUrgeRate) % (2f * Mathf.PI);
+            this.reproductiveUrge = 0.5f * (1f + Mathf.Cos(this.reproductiveUrge_x));   
         }
         else if (this.gender == Gender.MALE)
         {
@@ -157,8 +169,10 @@ public class Creature : MonoBehaviour
     #region Actions
     IEnumerator RandomWalk()
     {
-        Vector3 direction = new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f));
-        Vector3 destination = this.transform.position + direction;
+        Vector3 destination = HushPuppy.GenerateValidPosition(
+            () => this.transform.position + 3f * ((Vector3) Random.insideUnitCircle),
+            (vec) => mapManager.IsPositionValid(vec)
+        );
 
         yield return WalkTo(destination);
     }
@@ -215,13 +229,19 @@ public class Creature : MonoBehaviour
         this.baseSpeed /= GESTATION_SLOWDOWN;
         
         yield return new WaitForSeconds(GESTATION_DURATION);
-        GiveBirth(mother, father);
+        
+        int offspring = Random.Range(1, 3);
+        for (int i = 0; i < offspring; i++) {
+            GiveBirth(mother, father);
+        }
 
         this.gestating = false;
         this.baseSpeed *= GESTATION_SLOWDOWN;
     }
 
     void GiveBirth(Creature mother, Creature father) {
+        if (this.health < 0.75f) return;
+
         var obj = Instantiate(
             (GameObject) Resources.Load("Prefabs/" + this.creaturePrefabName),
             this.transform.position,
@@ -234,7 +254,8 @@ public class Creature : MonoBehaviour
 
     public void GetBorth(Creature mother, Creature father) {
         this.Start();
-        this.gender = Random.Range(0, 11) <= 5 ? Gender.FEMALE : Gender.MALE;
+        this.gender = Random.Range(0, 10) % 2 == 0 ? Gender.FEMALE : Gender.MALE;
+        this.health = mother.health;
         this.sr.color = this.gender == Gender.FEMALE ?
             (new Color(0.8f, 0.1f, 0.2f)) + Color.white * Random.Range(-0.2f, 0.2f) :
             (new Color(0.2f, 0.3f, 0.8f)) + Color.white * Random.Range(-0.2f, 0.2f);
@@ -247,7 +268,6 @@ public class Creature : MonoBehaviour
         float distance = Vector3.Distance(this.transform.position, obj.transform.position);
 
         if (obj.tag == "Food") {
-            print(obj + ", " + distance);
             var foodProcess = distance < TOUCHING_DISTANCE ? 
                 IntentProcess.Proc_EatFood(5f, obj)
                 : IntentProcess.Proc_GoFood(this.hunger * 3f, obj);

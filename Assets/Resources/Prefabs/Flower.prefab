@@ -164,7 +164,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   size: 1
-  timeBetweenSpreads: {x: 14, y: 18}
+  timeBetweenSpreads: {x: 10, y: 12}
+  maxSpreadOffspring: 2
   spreadRadius: 3
   growingRate: 0.25
+  nutritionalValue: 1
   plantPrefabName: Flower

@@ -16,9 +16,13 @@ public class Plant : MonoBehaviour
     [SerializeField]
     Vector2 timeBetweenSpreads = new Vector2(7f, 15f);
     [SerializeField]
+    int maxSpreadOffspring = 4;
+    [SerializeField]
     float spreadRadius = 3f;
     [SerializeField]
     float growingRate = 0.25f;
+    [SerializeField]
+    float nutritionalValue = 2f;
 
     [Header("Prefabs")]
 
@@ -55,7 +59,10 @@ public class Plant : MonoBehaviour
             float timeToSpread = HushPuppy.RandomFloat(timeBetweenSpreads);
             yield return new WaitForSeconds(timeToSpread);
 
-            Generate();
+            int offspring = Random.Range(1, this.maxSpreadOffspring + 1);
+            for (int i = 0; i < offspring; i++) {
+                Generate();
+            }
         }
     }
 
@@ -91,6 +98,6 @@ public class Plant : MonoBehaviour
     }
 
     public float GetNutritionalValue() {
-        return size;
+        return this.size * this.nutritionalValue;
     }
 }

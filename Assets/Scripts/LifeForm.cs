@@ -8,7 +8,7 @@ public class LifeForm : MonoBehaviour
     public event voidDelegate deathEvent;
 
     [SerializeField]
-    float lifetime = 0f;
+    public float lifetime = 0f;
     [SerializeField]
     float timeOfDeath = 0f;
     [SerializeField]
