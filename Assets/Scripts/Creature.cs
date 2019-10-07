@@ -21,6 +21,8 @@ public class Creature : MonoBehaviour
     float GESTATION_DURATION = 10f;
     [SerializeField]
     float GESTATION_SLOWDOWN = 2f;
+    [SerializeField]
+    Vector2 OFFSPRING = new Vector2(1, 3);
 
     [Header("State")]
 
@@ -230,7 +232,7 @@ public class Creature : MonoBehaviour
         
         yield return new WaitForSeconds(GESTATION_DURATION);
         
-        int offspring = Random.Range(1, 3);
+        int offspring = HushPuppy.RandomInt(this.OFFSPRING);
         for (int i = 0; i < offspring; i++) {
             GiveBirth(mother, father);
         }

@@ -10,6 +10,10 @@ public class Plant : MonoBehaviour
     [SerializeField]
     [Range(0f, 1f)]
     float size = 1f;
+    [SerializeField]
+    int neighbors = 0;
+    [SerializeField]
+    float actualGrowthRate = 0f;
 
     [Header("Attributes")]
 
@@ -20,7 +24,11 @@ public class Plant : MonoBehaviour
     [SerializeField]
     float spreadRadius = 3f;
     [SerializeField]
-    float growingRate = 0.25f;
+    float growthRate = 0.25f;
+    [SerializeField]
+    float growthPenaltyForNeighbor = 0.5f;
+    [SerializeField]
+    float neighborRadius = 1f;
     [SerializeField]
     float nutritionalValue = 2f;
 
@@ -82,11 +90,27 @@ public class Plant : MonoBehaviour
     public void GetBorth() {
         this.size = 0f;
         this.transform.localScale = Vector3.zero;
+        
+        var possibleNeighbors = Physics2D.CircleCastAll(
+            this.transform.position,
+            this.neighborRadius,
+            Vector2.zero);
+        foreach (var hit in possibleNeighbors) {
+            if (hit.transform.GetComponentInChildren<Plant>() != null) {
+                this.neighbors++;
+            }
+        }
+
+        if (this.neighbors > 3) {
+            Die();
+        }
+
+        float growthPenalty = Mathf.Pow(this.growthPenaltyForNeighbor, this.neighbors);
+        this.actualGrowthRate = growthPenalty * this.growthRate;
     }
     #endregion
 
-    void HandleSize() {
-        this.size = Mathf.Clamp01(this.size + Time.deltaTime * this.growingRate);
+    void HandleSize() {this.size = Mathf.Clamp01(this.size + Time.deltaTime * actualGrowthRate);
         this.transform.localScale = Vector3.one * size;
     }
 

@@ -163,7 +163,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lifetime: 0
   timeOfDeath: 0
-  lifeExpectancyRange: {x: 50, y: 70}
+  lifeExpectancyRange: {x: 70, y: 90}
 --- !u!114 &5238323016022636659
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -197,10 +197,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hungerRate: 0.025
   thirstRate: 0.5
-  reproductiveUrgeRate: 0.07
+  reproductiveUrgeRate: 0.09
   TOUCHING_DISTANCE: 0.7
   GESTATION_DURATION: 5
   GESTATION_SLOWDOWN: 2
+  OFFSPRING: {x: 1, y: 3}
   hunger: 0
   thirst: 0
   reproductiveUrge: 0

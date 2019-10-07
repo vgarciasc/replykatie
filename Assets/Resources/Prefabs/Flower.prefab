@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 6917078855084956980}
   - component: {fileID: 4995226799193291695}
   - component: {fileID: 1109825240193728361}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Flower
   m_TagString: Food
   m_Icon: {fileID: 0}
@@ -150,7 +150,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lifetime: 0
   timeOfDeath: 0
-  lifeExpectancyRange: {x: 20, y: 25}
+  lifeExpectancyRange: {x: 25, y: 30}
 --- !u!114 &1109825240193728361
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -164,9 +164,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   size: 1
-  timeBetweenSpreads: {x: 10, y: 12}
+  neighbors: 0
+  actualGrowthRate: 0
+  timeBetweenSpreads: {x: 6, y: 8}
   maxSpreadOffspring: 2
-  spreadRadius: 3
-  growingRate: 0.25
+  spreadRadius: 4
+  growthRate: 0.25
+  growthPenaltyForNeighbor: 0.7
+  neighborRadius: 0.8
   nutritionalValue: 1
   plantPrefabName: Flower

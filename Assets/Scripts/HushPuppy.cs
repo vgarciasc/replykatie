@@ -58,6 +58,10 @@ static class HushPuppy {
         return UnityEngine.Random.Range(vector.x, vector.y);
     }
 
+    public static int RandomInt(Vector3 vector) {
+        return UnityEngine.Random.Range((int) vector.x, (int) vector.y);
+    }
+
 	public static void BroadcastAll(string fun, System.Object msg) {
 		GameObject[] gos = (GameObject[]) GameObject.FindObjectsOfType(typeof(GameObject));
 		foreach (GameObject go in gos) {
