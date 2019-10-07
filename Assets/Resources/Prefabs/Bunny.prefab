@@ -201,7 +201,7 @@ MonoBehaviour:
   TOUCHING_DISTANCE: 0.7
   GESTATION_DURATION: 5
   GESTATION_SLOWDOWN: 2
-  OFFSPRING: {x: 1, y: 3}
+  OFFSPRING: {x: 1, y: 4}
   hunger: 0
   thirst: 0
   reproductiveUrge: 0
