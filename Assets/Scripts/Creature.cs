@@ -195,15 +195,19 @@ public class Creature : MonoBehaviour
 
     IEnumerator Eat(GameObject food)
     {
-        float nutritionalValue = food.GetComponent<Plant>().GetNutritionalValue();
+        food.GetComponentInChildren<LifeForm>().Death();
 
         yield return new WaitForSeconds(1f);
-        Destroy(food);
+
+        if (food == null) {
+            yield break;
+        }
 
         float animDuration = 0.3f;
         this.transform.DOScale(1.1f, animDuration).SetEase(Ease.InBounce);
         yield return new WaitForSeconds(animDuration);
         
+        float nutritionalValue = food.GetComponent<Plant>().GetNutritionalValue();
         this.hunger = this.hunger - 1f * nutritionalValue;
         
         yield return new WaitForSeconds(1f);
@@ -269,7 +273,7 @@ public class Creature : MonoBehaviour
         var obj = collision.gameObject;
         float distance = Vector3.Distance(this.transform.position, obj.transform.position);
 
-        if (obj.tag == "Food") {
+        if (obj.tag == "Food" && IsFoodAvailable(obj)) {
             var foodProcess = distance < TOUCHING_DISTANCE ? 
                 IntentProcess.Proc_EatFood(5f, obj)
                 : IntentProcess.Proc_GoFood(this.hunger * 3f, obj);
@@ -312,5 +316,9 @@ public class Creature : MonoBehaviour
 
     bool IsObjectAvailable(GameObject obj) {
         return obj != null && obj.activeSelf;
+    }
+
+    bool IsFoodAvailable(GameObject obj) {
+        return IsObjectAvailable(obj) && !obj.GetComponentInChildren<LifeForm>().IsDead();
     }
 }

@@ -1,0 +1,136 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &2177665318529806011
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 2983413750282108912, guid: f6e24f492e993b34fb447c4a61dd6fc6,
+        type: 3}
+      propertyPath: m_Name
+      value: Constant Flower
+      objectReference: {fileID: 0}
+    - target: {fileID: 6011177166696319717, guid: f6e24f492e993b34fb447c4a61dd6fc6,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 7.656
+      objectReference: {fileID: 0}
+    - target: {fileID: 6011177166696319717, guid: f6e24f492e993b34fb447c4a61dd6fc6,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.322
+      objectReference: {fileID: 0}
+    - target: {fileID: 6011177166696319717, guid: f6e24f492e993b34fb447c4a61dd6fc6,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6011177166696319717, guid: f6e24f492e993b34fb447c4a61dd6fc6,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6011177166696319717, guid: f6e24f492e993b34fb447c4a61dd6fc6,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6011177166696319717, guid: f6e24f492e993b34fb447c4a61dd6fc6,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6011177166696319717, guid: f6e24f492e993b34fb447c4a61dd6fc6,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6011177166696319717, guid: f6e24f492e993b34fb447c4a61dd6fc6,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6011177166696319717, guid: f6e24f492e993b34fb447c4a61dd6fc6,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6011177166696319717, guid: f6e24f492e993b34fb447c4a61dd6fc6,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6011177166696319717, guid: f6e24f492e993b34fb447c4a61dd6fc6,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5088942299574096403, guid: f6e24f492e993b34fb447c4a61dd6fc6,
+        type: 3}
+      propertyPath: m_Color.r
+      value: 0.94509804
+      objectReference: {fileID: 0}
+    - target: {fileID: 5088942299574096403, guid: f6e24f492e993b34fb447c4a61dd6fc6,
+        type: 3}
+      propertyPath: m_Color.g
+      value: 0.5931389
+      objectReference: {fileID: 0}
+    - target: {fileID: 5088942299574096403, guid: f6e24f492e993b34fb447c4a61dd6fc6,
+        type: 3}
+      propertyPath: m_Color.b
+      value: 0.43137252
+      objectReference: {fileID: 0}
+    - target: {fileID: 5088942299574096403, guid: f6e24f492e993b34fb447c4a61dd6fc6,
+        type: 3}
+      propertyPath: m_FlipX
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5088942299574096403, guid: f6e24f492e993b34fb447c4a61dd6fc6,
+        type: 3}
+      propertyPath: m_FlipY
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4995226799193291695, guid: f6e24f492e993b34fb447c4a61dd6fc6,
+        type: 3}
+      propertyPath: lifeExpectancyRange.x
+      value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: 4995226799193291695, guid: f6e24f492e993b34fb447c4a61dd6fc6,
+        type: 3}
+      propertyPath: lifeExpectancyRange.y
+      value: 210
+      objectReference: {fileID: 0}
+    - target: {fileID: 1109825240193728361, guid: f6e24f492e993b34fb447c4a61dd6fc6,
+        type: 3}
+      propertyPath: timeBetweenSpreads.x
+      value: 600
+      objectReference: {fileID: 0}
+    - target: {fileID: 1109825240193728361, guid: f6e24f492e993b34fb447c4a61dd6fc6,
+        type: 3}
+      propertyPath: timeBetweenSpreads.y
+      value: 610
+      objectReference: {fileID: 0}
+    - target: {fileID: 1109825240193728361, guid: f6e24f492e993b34fb447c4a61dd6fc6,
+        type: 3}
+      propertyPath: plantPrefabName
+      value: Constant Flower
+      objectReference: {fileID: 0}
+    - target: {fileID: 1109825240193728361, guid: f6e24f492e993b34fb447c4a61dd6fc6,
+        type: 3}
+      propertyPath: eternal
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1109825240193728361, guid: f6e24f492e993b34fb447c4a61dd6fc6,
+        type: 3}
+      propertyPath: shouldRespawn
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1109825240193728361, guid: f6e24f492e993b34fb447c4a61dd6fc6,
+        type: 3}
+      propertyPath: timeBetweenRespawns
+      value: 15
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: f6e24f492e993b34fb447c4a61dd6fc6, type: 3}

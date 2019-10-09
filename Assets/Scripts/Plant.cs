@@ -20,6 +20,8 @@ public class Plant : MonoBehaviour
     [SerializeField]
     Vector2 timeBetweenSpreads = new Vector2(7f, 15f);
     [SerializeField]
+    float timeBetweenRespawns = 3f;
+    [SerializeField]
     int maxSpreadOffspring = 4;
     [SerializeField]
     float spreadRadius = 3f;
@@ -31,6 +33,8 @@ public class Plant : MonoBehaviour
     float neighborRadius = 1f;
     [SerializeField]
     float nutritionalValue = 2f;
+    [SerializeField]
+    bool shouldRespawn = false;
 
     [Header("Prefabs")]
 
@@ -79,6 +83,10 @@ public class Plant : MonoBehaviour
             () => this.transform.position + (Vector3) (this.spreadRadius * Random.insideUnitCircle),
             (vec) => mapManager.IsPositionValid(vec));
         
+        Generate(position);
+    }
+
+    void Generate(Vector3 position) {
         GameObject plantPrefab = (GameObject) Resources.Load("Prefabs/" + plantPrefabName);
         var obj = Instantiate(plantPrefab, position, Quaternion.identity);
         obj.transform.SetParent(this.transform.parent);
@@ -90,22 +98,27 @@ public class Plant : MonoBehaviour
     public void GetBorth() {
         this.size = 0f;
         this.transform.localScale = Vector3.zero;
-        
-        var possibleNeighbors = Physics2D.CircleCastAll(
-            this.transform.position,
-            this.neighborRadius,
-            Vector2.zero);
-        foreach (var hit in possibleNeighbors) {
-            if (hit.transform.GetComponentInChildren<Plant>() != null) {
-                this.neighbors++;
+
+        float growthPenalty = 1f;
+
+        if (!shouldRespawn) {
+            var possibleNeighbors = Physics2D.CircleCastAll(
+                this.transform.position,
+                this.neighborRadius,
+                Vector2.zero);
+            foreach (var hit in possibleNeighbors) {
+                if (hit.transform.GetComponentInChildren<Plant>() != null) {
+                    this.neighbors++;
+                }
             }
+
+            if (this.neighbors > 3) {
+                Die();
+            }
+
+            growthPenalty = Mathf.Pow(this.growthPenaltyForNeighbor, this.neighbors);
         }
 
-        if (this.neighbors > 3) {
-            Die();
-        }
-
-        float growthPenalty = Mathf.Pow(this.growthPenaltyForNeighbor, this.neighbors);
         this.actualGrowthRate = growthPenalty * this.growthRate;
     }
     #endregion
@@ -114,10 +127,23 @@ public class Plant : MonoBehaviour
         this.transform.localScale = Vector3.one * size;
     }
 
+    bool hasRespawned = false;
+
     void Die() {StartCoroutine(Die_Coroutine());}
     IEnumerator Die_Coroutine() {
         this.sr.DOFade(0f, 1f);
         yield return new WaitForSeconds(1f);
+
+        if (shouldRespawn && !hasRespawned) {
+            yield return new WaitForSeconds(timeBetweenRespawns);
+            this.Generate(this.transform.position);
+            hasRespawned = true;
+            yield return new WaitForSeconds(0.2f);
+        }
+        else {
+            print("asdf");
+        }
+
         Destroy(this.gameObject);
     }
 

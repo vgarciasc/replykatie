@@ -27,15 +27,22 @@ public class LifeForm : MonoBehaviour
     }
 
     void HandleLife() {
-        if (this.isDead) return;
+        if (IsDead()) return;
 
         this.lifetime += Time.deltaTime;
         if (this.lifetime > this.timeOfDeath) {
-            if (deathEvent != null) {
-                deathEvent();
-            }
-            
-            isDead = true;
+            Death();
         }      
+    }
+
+    public void Death() {
+        isDead = true;
+        if (deathEvent != null) {
+            deathEvent();
+        }
+    }
+
+    public bool IsDead() {
+        return isDead;
     }
 }
