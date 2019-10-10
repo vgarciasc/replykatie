@@ -140,7 +140,7 @@ public class Creature : MonoBehaviour
                 break;
             case IntentProcessKind.EAT_FOOD:
                 var food = process.target;
-                if (IsObjectAvailable(food)) {
+                if (IsFoodAvailable(food)) {
                     yield return Eat(food);
                 }
                 break;
@@ -195,6 +195,7 @@ public class Creature : MonoBehaviour
 
     IEnumerator Eat(GameObject food)
     {
+        float nutritionalValue = food.GetComponent<Plant>().GetNutritionalValue();
         food.GetComponentInChildren<LifeForm>().Death();
 
         yield return new WaitForSeconds(1f);
@@ -207,7 +208,6 @@ public class Creature : MonoBehaviour
         this.transform.DOScale(1.1f, animDuration).SetEase(Ease.InBounce);
         yield return new WaitForSeconds(animDuration);
         
-        float nutritionalValue = food.GetComponent<Plant>().GetNutritionalValue();
         this.hunger = this.hunger - 1f * nutritionalValue;
         
         yield return new WaitForSeconds(1f);
