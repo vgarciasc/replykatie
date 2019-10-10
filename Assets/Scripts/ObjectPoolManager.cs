@@ -59,6 +59,14 @@ public class ObjectPoolManager : MonoBehaviour
         obj.SetActive(false);
     }
 
+    public void CleanObservations()
+    {
+        foreach (var poolableObject in this.poolableObjects)
+        {
+            poolableObject.objects = poolableObject.objects.FindAll((f) => f.activeSelf);
+        }
+    }
+
     void InstantiateToPool(PoolableObject poolableObject, int amount)
     {
         string defaultName = System.Enum.GetName(typeof(PoolableObjectKinds), poolableObject.kind) + " #";

@@ -63,9 +63,10 @@ public class Creature : MonoBehaviour
     CPU cpu;
     Rigidbody2D rb;
     SpriteRenderer sr;
-    LifeForm lifeForm;
     MapManager mapManager;
     ObjectPoolManager opm;
+    LifeForm lifeForm;
+    TriggerObservationCompiler toc;
 
     void Start()
     {
@@ -73,11 +74,14 @@ public class Creature : MonoBehaviour
         this.rb = this.GetComponent<Rigidbody2D>();
         this.sr = this.GetComponent<SpriteRenderer>();
         this.lifeForm = this.GetComponent<LifeForm>();
+        this.toc = this.GetComponent<TriggerObservationCompiler>();
         
         this.mapManager = MapManager.GetMapManager();
         this.opm = ObjectPoolManager.GetObjectPoolManager();
         
         this.lifeForm.deathEvent += Die;
+
+        StartCoroutine(DeluxeUpdate());
     }
 
     void Update()
@@ -277,29 +281,48 @@ public class Creature : MonoBehaviour
     #endregion
 
     #region Sensing
-    void OnTriggerStay2D(Collider2D collision) {
-        var obj = collision.gameObject;
+
+    IEnumerator DeluxeUpdate()
+    {
+        while (true)
+        {
+            opm.CleanObservations();
+
+            foreach (var food in this.toc.GetObservationsByTag("Food")) {
+                HandleFood(food);
+            }
+
+            foreach (var creature in this.toc.GetObservationsByTag("Creature"))
+            {
+                HandleCreature(creature);
+            }
+
+            yield return new WaitForSeconds(0.2f);
+        }
+    }
+
+    void HandleFood(GameObject obj) {
         float distance = Vector3.Distance(this.transform.position, obj.transform.position);
 
-        if (obj.CompareTag("Food") && IsFoodAvailable(obj))
+        var foodProcess = distance < TOUCHING_DISTANCE ?
+            IntentProcess.Proc_EatFood(5f, obj)
+            : IntentProcess.Proc_GoFood(this.hunger * 3f, obj);
+        cpu.Interrupt(foodProcess);
+    }
+
+    void HandleCreature(GameObject obj)
+    {
+        float distance = Vector3.Distance(this.transform.position, obj.transform.position);
+        var targetCreature = obj.GetComponentInChildren<Creature>();
+
+        if (this.gender == Gender.MALE && targetCreature.gender == Gender.FEMALE)
         {
-            var foodProcess = distance < TOUCHING_DISTANCE ?
-                IntentProcess.Proc_EatFood(5f, obj)
-                : IntentProcess.Proc_GoFood(this.hunger * 3f, obj);
-            cpu.Interrupt(foodProcess);
-        }
-        else if (obj.CompareTag("Creature"))
-        {
-            var targetCreature = obj.GetComponentInChildren<Creature>();
-            if (this.gender == Gender.MALE && targetCreature.gender == Gender.FEMALE)
+            if (this.reproductiveUrge * targetCreature.reproductiveUrge > 0.7f)
             {
-                if (this.reproductiveUrge * targetCreature.reproductiveUrge > 0.7f)
-                {
-                    var mateProcess = distance < TOUCHING_DISTANCE ?
-                        IntentProcess.Proc_Copulate(5f, obj)
-                        : IntentProcess.Proc_GoMate(this.reproductiveUrge * targetCreature.reproductiveUrge * 2f, obj);
-                    cpu.Interrupt(mateProcess);
-                }
+                var mateProcess = distance < TOUCHING_DISTANCE ?
+                    IntentProcess.Proc_Copulate(5f, obj)
+                    : IntentProcess.Proc_GoMate(this.reproductiveUrge * targetCreature.reproductiveUrge * 2f, obj);
+                cpu.Interrupt(mateProcess);
             }
         }
     }

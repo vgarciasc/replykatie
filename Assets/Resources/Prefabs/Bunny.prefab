@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 8114740418525837727}
   - component: {fileID: 742502694464029274}
   - component: {fileID: 5238323016022636659}
+  - component: {fileID: 4014374198497717904}
   - component: {fileID: 5238323016022636658}
   m_Layer: 8
   m_Name: Bunny
@@ -183,6 +184,23 @@ MonoBehaviour:
     position: {x: 0, y: 0, z: 0}
     target: {fileID: 0}
   verbose: 0
+--- !u!114 &4014374198497717904
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5238323016022636621}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: acf2f00e4c198324b99c264869d34bbf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  triggerObservations:
+  - tag: Food
+    objects: []
+  - tag: Creature
+    objects: []
 --- !u!114 &5238323016022636658
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -197,11 +215,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hungerRate: 0.025
   thirstRate: 0.5
-  reproductiveUrgeRate: 0.09
+  reproductiveUrgeRate: 0.2
   TOUCHING_DISTANCE: 0.7
   GESTATION_DURATION: 5
   GESTATION_SLOWDOWN: 2
-  OFFSPRING: {x: 1, y: 4}
+  OFFSPRING: {x: 6, y: 10}
   hunger: 0
   thirst: 0
   reproductiveUrge: 0
