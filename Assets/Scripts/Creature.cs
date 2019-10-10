@@ -65,6 +65,7 @@ public class Creature : MonoBehaviour
     SpriteRenderer sr;
     LifeForm lifeForm;
     MapManager mapManager;
+    ObjectPoolManager opm;
 
     void Start()
     {
@@ -74,6 +75,7 @@ public class Creature : MonoBehaviour
         this.lifeForm = this.GetComponent<LifeForm>();
         
         this.mapManager = MapManager.GetMapManager();
+        this.opm = ObjectPoolManager.GetObjectPoolManager();
         
         this.lifeForm.deathEvent += Die;
     }
@@ -248,11 +250,17 @@ public class Creature : MonoBehaviour
     void GiveBirth(Creature mother, Creature father) {
         if (this.health < 0.75f) return;
 
-        var obj = Instantiate(
-            (GameObject) Resources.Load("Prefabs/" + this.creaturePrefabName),
-            this.transform.position,
-            Quaternion.identity);
-        obj.transform.SetParent(this.transform.parent);
+        //var obj = Instantiate(
+        //    (GameObject) Resources.Load("Prefabs/" + this.creaturePrefabName),
+        //    this.transform.position,
+        //    Quaternion.identity);
+        //obj.transform.SetParent(this.transform.parent);
+
+        var obj = opm.Spawn(PoolableObjectKinds.RABBIT);
+        obj.transform.position = this.transform.position;
+
+        //print(obj.name);
+        //Debug.Break();
 
         var offspring = obj.GetComponentInChildren<Creature>();
         offspring.GetBorth(mother, father);
@@ -273,13 +281,14 @@ public class Creature : MonoBehaviour
         var obj = collision.gameObject;
         float distance = Vector3.Distance(this.transform.position, obj.transform.position);
 
-        if (obj.tag == "Food" && IsFoodAvailable(obj)) {
-            var foodProcess = distance < TOUCHING_DISTANCE ? 
+        if (obj.CompareTag("Food") && IsFoodAvailable(obj))
+        {
+            var foodProcess = distance < TOUCHING_DISTANCE ?
                 IntentProcess.Proc_EatFood(5f, obj)
                 : IntentProcess.Proc_GoFood(this.hunger * 3f, obj);
             cpu.Interrupt(foodProcess);
         }
-        else if (obj.tag == "Creature")
+        else if (obj.CompareTag("Creature"))
         {
             var targetCreature = obj.GetComponentInChildren<Creature>();
             if (this.gender == Gender.MALE && targetCreature.gender == Gender.FEMALE)
@@ -310,7 +319,8 @@ public class Creature : MonoBehaviour
     IEnumerator Die_Coroutine() {
         this.sr.DOFade(0f, 1f);
         yield return new WaitForSeconds(1f);
-        Destroy(this.gameObject);
+        //Destroy(this.gameObject);
+        opm.Despawn(this.gameObject);
     }
     #endregion
 
