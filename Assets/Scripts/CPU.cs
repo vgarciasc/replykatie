@@ -115,11 +115,6 @@ public class CPU : MonoBehaviour
     {
         this.creature = this.GetComponent<Creature>();
     }
-
-    void Update()
-    {
-        
-    }
     
     public void Interrupt(IntentProcess process) {
         if (ShouldUpdateProcess(process.kind)) {
@@ -148,8 +143,8 @@ public class CPU : MonoBehaviour
 
     void StartNewProcess(IntentProcess process) {
         var processCoroutine = creature.GetProcessCoroutine(process);
-        this.currentProcessCoroutine = StartCoroutine(processCoroutine);
         this.currentProcess = process;
+        this.currentProcessCoroutine = StartCoroutine(processCoroutine);
     }
 
     void ChangeCurrentProcess(IntentProcess process) {

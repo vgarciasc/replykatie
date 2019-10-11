@@ -86,13 +86,15 @@ public class Plant : MonoBehaviour
         Generate(position);
     }
 
-    void Generate(Vector3 position) {
+    GameObject Generate(Vector3 position) {
         GameObject plantPrefab = (GameObject) Resources.Load("Prefabs/" + plantPrefabName);
         var obj = Instantiate(plantPrefab, position, Quaternion.identity);
         obj.transform.SetParent(this.transform.parent);
 
         var plant = obj.GetComponent<Plant>();
         plant.GetBorth();
+
+        return obj;
     }
 
     public void GetBorth() {
@@ -136,12 +138,12 @@ public class Plant : MonoBehaviour
 
         if (shouldRespawn && !hasRespawned) {
             yield return new WaitForSeconds(timeBetweenRespawns);
-            this.Generate(this.transform.position);
             hasRespawned = true;
+
+            var respawned = this.Generate(this.transform.position);
+            respawned.name = this.name;
+            
             yield return new WaitForSeconds(0.2f);
-        }
-        else {
-            print("asdf");
         }
 
         Destroy(this.gameObject);

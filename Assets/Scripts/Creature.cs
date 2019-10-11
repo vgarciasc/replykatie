@@ -211,7 +211,9 @@ public class Creature : MonoBehaviour
         }
 
         float animDuration = 0.3f;
-        this.transform.DOScale(1.1f, animDuration).SetEase(Ease.InBounce);
+        this.transform.DOScale(
+            this.transform.localScale * 1.05f,
+            animDuration).SetEase(Ease.InBounce);
         yield return new WaitForSeconds(animDuration);
         
         this.hunger = this.hunger - 1f * nutritionalValue;
@@ -286,13 +288,13 @@ public class Creature : MonoBehaviour
     {
         while (true)
         {
-            opm.CleanObservations();
+            toc.CleanObservations();
 
-            foreach (var food in this.toc.GetObservationsByTag("Food")) {
+            foreach (var food in toc.GetObservationsByTag("Food")) {
                 HandleFood(food);
             }
 
-            foreach (var creature in this.toc.GetObservationsByTag("Creature"))
+            foreach (var creature in toc.GetObservationsByTag("Creature"))
             {
                 HandleCreature(creature);
             }
