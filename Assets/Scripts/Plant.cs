@@ -131,7 +131,7 @@ public class Plant : MonoBehaviour
 
     bool hasRespawned = false;
 
-    void Die() {StartCoroutine(Die_Coroutine());}
+    public void Die() {StartCoroutine(Die_Coroutine());}
     IEnumerator Die_Coroutine() {
         this.sr.DOFade(0f, 1f);
         yield return new WaitForSeconds(1f);

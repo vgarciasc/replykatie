@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LifeForm : MonoBehaviour
+public class LifeForm : MonoBehaviour, PoolableResettable
 {
     public delegate void voidDelegate();
     public event voidDelegate deathEvent;
@@ -13,12 +13,18 @@ public class LifeForm : MonoBehaviour
     float timeOfDeath = 0f;
     [SerializeField]
     Vector2 lifeExpectancyRange = new Vector2(20f, 25f);
-
+    [SerializeField]
     bool isDead = false;
 
     void Start()
     {
+        ResetState();
+    }
+
+    public void ResetState() {
         this.timeOfDeath = HushPuppy.RandomFloat(this.lifeExpectancyRange);
+        this.lifetime = 0f;
+        this.isDead = false;
     }
 
     void Update()
@@ -37,8 +43,14 @@ public class LifeForm : MonoBehaviour
 
     public void Death() {
         isDead = true;
-        if (deathEvent != null) {
-            deathEvent();
+        
+        // if (deathEvent != null) {
+        //     deathEvent();
+        // }
+
+        var plant = this.GetComponentInChildren<Plant>();
+        if (plant != null) {
+            plant.Die();
         }
     }
 

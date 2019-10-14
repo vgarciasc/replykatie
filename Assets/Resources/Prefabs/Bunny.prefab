@@ -76,7 +76,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 67f22281157e9f84ba824c05f0be42a7, type: 3}
+  m_Sprite: {fileID: 21300000, guid: f6b3d95be9a3b4c41baf710076a3da67, type: 3}
   m_Color: {r: 1, g: 0.4292453, b: 0.89753205, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -125,7 +125,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.5, y: 0.5}
+    oldSize: {x: 0.35, y: 0.41}
     newSize: {x: 0.5, y: 0.5}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -164,7 +164,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lifetime: 0
   timeOfDeath: 0
-  lifeExpectancyRange: {x: 70, y: 90}
+  lifeExpectancyRange: {x: 40, y: 50}
+  isDead: 0
 --- !u!114 &5238323016022636659
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -201,6 +202,7 @@ MonoBehaviour:
     objects: []
   - tag: Creature
     objects: []
+  radius: 5
 --- !u!114 &5238323016022636658
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -213,20 +215,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2dbdab3452f823d459aef35a8dda462e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hungerRate: 0.025
+  hungerRate: 0.05
   thirstRate: 0.5
-  reproductiveUrgeRate: 0.2
+  reproductiveUrgeRate: 0.1
   TOUCHING_DISTANCE: 0.7
-  GESTATION_DURATION: 5
+  GESTATION_DURATION: 2.5
   GESTATION_SLOWDOWN: 2
-  OFFSPRING: {x: 6, y: 10}
+  OFFSPRING: {x: 1, y: 6}
   hunger: 0
-  thirst: 0
   reproductiveUrge: 0
   health: 0
   size: 0
   growthRate: 0.25
   gestating: 0
+  default_hunger: 0
+  default_reproductiveUrge: 0
+  default_reproductiveUrge_x: 3.1415927
+  default_health: 0
+  default_size: 0
+  default_gestating: 0
   baseSpeed: 2
   gender: 1
   creaturePrefabName: Bunny

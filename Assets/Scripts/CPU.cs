@@ -115,6 +115,13 @@ public class CPU : MonoBehaviour
     {
         this.creature = this.GetComponent<Creature>();
     }
+
+    public void ResetState() {
+        this.currentProcess = null;
+        if (this.currentProcessCoroutine != null) {
+            StopCoroutine(this.currentProcessCoroutine);
+        }
+    }
     
     public void Interrupt(IntentProcess process) {
         if (ShouldUpdateProcess(process.kind)) {

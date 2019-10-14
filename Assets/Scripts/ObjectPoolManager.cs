@@ -18,7 +18,9 @@ public class PoolableObject
 public class ObjectPoolManager : MonoBehaviour
 {
     public static ObjectPoolManager GetObjectPoolManager() {
-        return (ObjectPoolManager) HushPuppy.safeFindComponent("GameController", "ObjectPoolManager");
+        var o = (ObjectPoolManager) HushPuppy.safeFindComponent("GameController", "ObjectPoolManager");
+        if (o == null) { print("Inactive"); Debug.Break(); }
+        return o;
     }
 
     [SerializeField]
@@ -42,16 +44,33 @@ public class ObjectPoolManager : MonoBehaviour
         var objects = poolableObject.objects;
         for (int i = 0; i < objects.Count; i++) {
             if (!objects[i].activeInHierarchy) {
+                if (shouldActivate) {
+                    objects[i].SetActive(true);
+                    foreach (var pr in objects[i].GetComponentsInChildren<PoolableResettable>()) {
+                        pr.ResetState();
+                    }                    
+                }
+                return objects[i];
+            }
+        }
+
+        print("Doubling pool (before: " + objects.Count + ")");
+
+        if (poolableObject.autoscale) {
+            InstantiateToPool(poolableObject, objects.Count);
+        }
+        
+        print("Doubled pool (after: " + objects.Count + ")");
+
+        objects = poolableObject.objects;
+        for (int i = 0; i < objects.Count; i++) {
+            if (!objects[i].activeInHierarchy) {
                 if (shouldActivate) objects[i].SetActive(true);
                 return objects[i];
             }
         }
 
-        if (poolableObject.autoscale) {
-            InstantiateToPool(poolableObject, objects.Count);
-        }
-
-        return Spawn(kind, shouldActivate);
+        return null;
     }
 
     public void Despawn(GameObject obj)
@@ -75,6 +94,7 @@ public class ObjectPoolManager : MonoBehaviour
             list.Add(obj);
             obj.name = defaultName + (list.Count).ToString();
         }
+
         poolableObject.objects = list;
     }
 

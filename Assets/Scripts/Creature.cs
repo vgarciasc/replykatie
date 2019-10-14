@@ -30,9 +30,6 @@ public class Creature : MonoBehaviour
     [Range(-1f, 1f)]
     float hunger = 0;
     [SerializeField]
-    [Range(-1f, 1f)]
-    float thirst = 0;
-    [SerializeField]
     [Range(0f, 1f)]
     float reproductiveUrge = 0;
     // [SerializeField]
@@ -46,6 +43,20 @@ public class Creature : MonoBehaviour
     float growthRate = 0.25f;
     [SerializeField]
     bool gestating = false;
+
+    [Header("Default Values")]
+    [SerializeField]
+    float default_hunger = 0;
+    [SerializeField]
+    float default_reproductiveUrge = 0;
+    [SerializeField]
+    float default_reproductiveUrge_x = Mathf.PI;
+    [SerializeField]
+    float default_health = Mathf.PI;
+    [SerializeField]
+    float default_size = 0;
+    [SerializeField]
+    bool default_gestating = false;
 
     [Header("Attributes")]
 
@@ -68,6 +79,8 @@ public class Creature : MonoBehaviour
     LifeForm lifeForm;
     TriggerObservationCompiler toc;
 
+    Coroutine deluxeUpdate;
+
     void Start()
     {
         this.cpu = this.GetComponent<CPU>();
@@ -80,8 +93,8 @@ public class Creature : MonoBehaviour
         this.opm = ObjectPoolManager.GetObjectPoolManager();
         
         this.lifeForm.deathEvent += Die;
-
-        StartCoroutine(DeluxeUpdate());
+        
+        ResetState();
     }
 
     void Update()
@@ -96,6 +109,20 @@ public class Creature : MonoBehaviour
 
         HandleIdle();
         HandleHealth();
+    }
+
+    public void ResetState() {
+        this.hunger = this.default_hunger;
+        this.reproductiveUrge = this.default_reproductiveUrge;
+        this.reproductiveUrge_x = this.default_reproductiveUrge_x;
+        this.health = this.default_health;
+        this.size = this.default_size;
+        this.gestating = this.default_gestating;
+
+        if (deluxeUpdate != null) {
+            StopCoroutine(deluxeUpdate);
+        }
+        deluxeUpdate = StartCoroutine(DeluxeUpdate());
     }
 
     #region Necessities
@@ -136,6 +163,8 @@ public class Creature : MonoBehaviour
 
     #region Process
     public IEnumerator GetProcessCoroutine(IntentProcess process) {
+        CleanContext();
+
         switch (process.kind) {
             case IntentProcessKind.SEARCH_FOOD: 
             case IntentProcessKind.SEARCH_MATE:
@@ -204,13 +233,13 @@ public class Creature : MonoBehaviour
         float nutritionalValue = food.GetComponent<Plant>().GetNutritionalValue();
         food.GetComponentInChildren<LifeForm>().Death();
 
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.2f);
 
         if (food == null) {
             yield break;
         }
 
-        float animDuration = 0.3f;
+        float animDuration = 0.1f;
         this.transform.DOScale(
             this.transform.localScale * 1.05f,
             animDuration).SetEase(Ease.InBounce);
@@ -218,7 +247,7 @@ public class Creature : MonoBehaviour
         
         this.hunger = this.hunger - 1f * nutritionalValue;
         
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.2f);
     }
 
     IEnumerator Copulate(Creature mate)
@@ -243,7 +272,7 @@ public class Creature : MonoBehaviour
         this.baseSpeed /= GESTATION_SLOWDOWN;
         
         yield return new WaitForSeconds(GESTATION_DURATION);
-        
+
         int offspring = HushPuppy.RandomInt(this.OFFSPRING);
         for (int i = 0; i < offspring; i++) {
             GiveBirth(mother, father);
@@ -273,7 +302,8 @@ public class Creature : MonoBehaviour
     }
 
     public void GetBorth(Creature mother, Creature father) {
-        this.Start();
+        Start();
+        cpu.ResetState();
         this.gender = Random.Range(0, 10) % 2 == 0 ? Gender.FEMALE : Gender.MALE;
         this.health = mother.health;
         this.sr.color = this.gender == Gender.FEMALE ?
@@ -288,8 +318,6 @@ public class Creature : MonoBehaviour
     {
         while (true)
         {
-            toc.CleanObservations();
-
             foreach (var food in toc.GetObservationsByTag("Food")) {
                 HandleFood(food);
             }
@@ -304,16 +332,21 @@ public class Creature : MonoBehaviour
     }
 
     void HandleFood(GameObject obj) {
+        if (obj == null) return;
+
         float distance = Vector3.Distance(this.transform.position, obj.transform.position);
+        var food = obj.GetComponentInChildren<Plant>();
 
         var foodProcess = distance < TOUCHING_DISTANCE ?
-            IntentProcess.Proc_EatFood(5f, obj)
+            IntentProcess.Proc_EatFood(this.hunger * 5f, obj)
             : IntentProcess.Proc_GoFood(this.hunger * 3f, obj);
         cpu.Interrupt(foodProcess);
     }
 
     void HandleCreature(GameObject obj)
     {
+        if (obj == null) return;
+
         float distance = Vector3.Distance(this.transform.position, obj.transform.position);
         var targetCreature = obj.GetComponentInChildren<Creature>();
 
@@ -333,7 +366,7 @@ public class Creature : MonoBehaviour
     #region Health
     void HandleHealth()
     {
-        this.health = 1 - (this.hunger * 0.5f + this.thirst * 0.5f);
+        this.health = 1 - (this.hunger * 0.6f);
         if (health <= 0.5f)
         {
             Die();
