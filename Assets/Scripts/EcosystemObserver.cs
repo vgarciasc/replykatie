@@ -23,7 +23,7 @@ public class EcosystemObserver : MonoBehaviour
     void Update()
     {
         rabbitCounter.text = GameObject.FindObjectsOfType<Creature>().Length.ToString();
-        flowerCounter.text = GameObject.FindObjectsOfType<Plant>().Length.ToString();
+        flowerCounter.text = GameObject.FindObjectsOfType<ConstantFlower>().Length.ToString();
     }
 
     IEnumerator ObserveGenes() {

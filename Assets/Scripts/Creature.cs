@@ -233,7 +233,7 @@ public class Creature : MonoBehaviour
 
     IEnumerator Eat(GameObject food)
     {
-        float nutritionalValue = food.GetComponent<Plant>().GetNutritionalValue();
+        float nutritionalValue = food.GetComponent<Food>().GetNutritionalValue();
         food.GetComponentInChildren<LifeForm>().Death();
 
         yield return new WaitForSeconds(0.2f);
@@ -349,7 +349,6 @@ public class Creature : MonoBehaviour
         if (obj == null) return;
 
         float distance = Vector3.Distance(this.transform.position, obj.transform.position);
-        var food = obj.GetComponentInChildren<Plant>();
 
         var foodProcess = distance < TOUCHING_DISTANCE ?
             IntentProcess.Proc_EatFood(this.hunger * 5f, obj)

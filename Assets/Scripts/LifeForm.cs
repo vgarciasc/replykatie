@@ -43,15 +43,15 @@ public class LifeForm : MonoBehaviour, PoolableResettable
 
     public void Death() {
         isDead = true;
-        
-        // if (deathEvent != null) {
-        //     deathEvent();
-        // }
 
-        var plant = this.GetComponentInChildren<Plant>();
-        if (plant != null) {
-            plant.Die();
+        if (deathEvent != null) {
+            deathEvent();
         }
+
+        //var plant = this.GetComponentInChildren<ConstantFood>();
+        //if (plant != null) {
+        //    plant.Die();
+        //}
     }
 
     public bool IsDead() {
