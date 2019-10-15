@@ -202,7 +202,6 @@ MonoBehaviour:
     objects: []
   - tag: Creature
     objects: []
-  radius: 5
 --- !u!114 &5238323016022636658
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -234,6 +233,7 @@ MonoBehaviour:
   default_health: 0
   default_size: 0
   default_gestating: 0
-  baseSpeed: 2
   gender: 1
+  viewDistance: 2
+  baseSpeed: 2
   creaturePrefabName: Bunny

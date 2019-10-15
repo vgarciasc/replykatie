@@ -61,9 +61,11 @@ public class Creature : MonoBehaviour
     [Header("Attributes")]
 
     [SerializeField]
-    float baseSpeed = 2f;
-    [SerializeField]
     Gender gender = Gender.UNDEFINED;
+
+    [Header("Genes")]
+    public float viewDistance = 2f;
+    public float baseSpeed = 2f;
 
     [Header("Prefabs")]
 
@@ -117,6 +119,7 @@ public class Creature : MonoBehaviour
         this.reproductiveUrge_x = this.default_reproductiveUrge_x;
         this.health = this.default_health;
         this.size = this.default_size;
+        this.transform.localScale = Vector3.one;
         this.gestating = this.default_gestating;
 
         if (deluxeUpdate != null) {
@@ -303,12 +306,23 @@ public class Creature : MonoBehaviour
 
     public void GetBorth(Creature mother, Creature father) {
         Start();
+        PassGenes(mother, father);
+
         cpu.ResetState();
         this.gender = Random.Range(0, 10) % 2 == 0 ? Gender.FEMALE : Gender.MALE;
         this.health = mother.health;
         this.sr.color = this.gender == Gender.FEMALE ?
             (new Color(0.8f, 0.1f, 0.2f)) + Color.white * Random.Range(-0.2f, 0.2f) :
             (new Color(0.2f, 0.3f, 0.8f)) + Color.white * Random.Range(-0.2f, 0.2f);
+    }
+    #endregion
+
+    #region Genetics
+    void PassGenes(Creature mother, Creature father) {
+        this.viewDistance = Genetics.CombineGenes(
+            mother.viewDistance, father.viewDistance);
+        this.baseSpeed = Genetics.CombineGenes(
+            mother.baseSpeed, father.baseSpeed);
     }
     #endregion
 

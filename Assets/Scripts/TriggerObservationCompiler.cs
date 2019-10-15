@@ -13,9 +13,9 @@ public class TriggerObservationCompiler : MonoBehaviour, PoolableResettable
 {
     public List<TriggerObservation> triggerObservations = new List<TriggerObservation>();
     
-    [SerializeField]
-    float radius = 2f;
+    float radius = -1f;
 
+    Creature _creature;
     Transform _transform;
     Coroutine _customUpdateCoroutine;
 
@@ -25,7 +25,10 @@ public class TriggerObservationCompiler : MonoBehaviour, PoolableResettable
 
     public void ResetState() {
         _transform = this.transform;
-        
+        _creature = this.GetComponentInChildren<Creature>();
+
+        radius = _creature.viewDistance;
+
         if (_customUpdateCoroutine != null) {
             StopCoroutine(_customUpdateCoroutine);
         }
